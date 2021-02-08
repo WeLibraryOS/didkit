@@ -2,7 +2,7 @@ package com.spruceid.didkitexample.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spruceid.didkitexample.entity.User;
+import com.spruceid.didkitexample.entity.user.User;
 import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 

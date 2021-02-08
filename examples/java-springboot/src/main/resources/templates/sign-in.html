@@ -52,14 +52,11 @@
                     <div id="collapse-pres" class="accordion-collapse collapse" aria-labelledby="sign-in-pres"
                          data-bs-parent="#sign-in-accordion">
                         <div class="accordion-body">
-                            <form th:action="@{/sign-in}" method="post">
-                                <div class="my-2">
-                                    <label class="form-label" for="presentation">Presentation:</label>
-                                    <input class="form-control" type="text" id="presentation" name="presentation"/>
-                                </div>
-
-                                <input class="btn btn-primary" type="submit" value="Sign In With Presentation"/>
+                            <form id="vp-request-form" th:data-uuid="${uuid}" th:action="@{/sign-in}" method="post">
+                                <input class="form-control" type="text" id="vp-request-field" name="token" hidden/>
                             </form>
+
+                            <img class="d-block mx-auto" th:src="'data:image/png;base64,' + ${qrcode}"/>
                         </div>
                     </div>
                 </div>

@@ -26,8 +26,8 @@ public class QRCode {
         return Base64.getEncoder().encodeToString(os.toByteArray());
     }
 
-    public static ModelAndView getModelAndView(String content) throws Exception {
-        final ModelAndView mav = new ModelAndView("qrcode");
+    public static ModelAndView getModelAndView(String model, String content) throws Exception {
+        final ModelAndView mav = new ModelAndView(model);
         final BufferedImage image = QRCode.generateImage(content);
         final String base64 = QRCode.imageToBase64(image);
         mav.addObject("qrcode", base64);

@@ -5,13 +5,15 @@ $(document).ready(async function() {
 
   await polyfill.loadOnce(MEDIATOR);
 
+  let uuid = $('#vp-request-form').data("uuid");
+
   $('#chapi-sign-in').on('click', async function (event) {
     event.preventDefault();
 
     const credentialQuery = {
       web: {
         VerifiablePresentation: {
-          //challenge: uuidv4(),
+          challenge: uuid,
           domain: "java.theosirian.com",
           query: {
             type: 'QueryByExample',

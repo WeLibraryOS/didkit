@@ -1,20 +1,27 @@
 package com.spruceid.didkitexample.user;
 
-import com.spruceid.didkitexample.entity.User;
+import com.spruceid.didkitexample.entity.user.User;
 import com.spruceid.didkitexample.util.QRCode;
+import com.spruceid.didkitexample.util.Resources;
 import lombok.AllArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.ui.Model;
+
+import java.time.Duration;
+import java.util.UUID;
 
 @Controller
 @AllArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final StringRedisTemplate redisTemplate;
 
     @GetMapping("/sign-up")
     String signUpGet(User user) {
@@ -28,28 +35,33 @@ public class UserController {
     }
 
     @GetMapping("/sign-in")
-    String signIn() {
-        return "sign-in";
+    ModelAndView signIn() throws Exception {
+        final String uuid = UUID.randomUUID().toString();
+        final String url = "https://" + Resources.baseUrl + "/verifiable-presentation-request/" + uuid;
+        final ModelAndView model = QRCode.getModelAndView("sign-in", url);
+        model.addObject("uuid", uuid);
+        return model;
     }
 
     @GetMapping("/credential")
-    String credential() {
-        return "credential";
+    ModelAndView credential(
+            @AuthenticationPrincipal User user
+    ) throws Exception {
+        final String uuid = UUID.randomUUID().toString();
+        redisTemplate.opsForValue().set(uuid, user.getUsername());
+        redisTemplate.expire(uuid, Duration.ofSeconds(90));
+        final String url = "https://" + Resources.baseUrl + "/credential-offer/" + uuid;
+        return QRCode.getModelAndView("credential", url);
     }
 
     @PostMapping("/credential")
-    String credentialOffer(HttpServletRequest request, @AuthenticationPrincipal User user, Model model) throws Exception {
-        final String did = request.getParameter("did");
+    ModelAndView credentialOffer(
+            @AuthenticationPrincipal User user,
+            @RequestParam("did") String did,
+            ModelAndView model
+    ) throws Exception {
         final String credential = userService.issueCredential(did, user);
-        model.addAttribute("credential", credential);
-        return "credential-offer";
+        model.addObject("credential", credential);
+        return model;
     }
-
-    @PostMapping("/qrcode")
-    ModelAndView qrcode(String id, @AuthenticationPrincipal User user) throws Exception {
-        // TODO: [wip] example of how to display the qrcode
-        final String credential = userService.issueCredential(id, user);
-        return QRCode.getModelAndView(credential);
-    }
-
 }

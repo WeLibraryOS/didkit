@@ -3,9 +3,10 @@ package com.spruceid.didkitexample.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spruceid.DIDKit;
 import com.spruceid.DIDKitException;
-import com.spruceid.didkitexample.entity.User;
-import com.spruceid.didkitexample.entity.UserCredential;
+import com.spruceid.didkitexample.entity.user.User;
+import com.spruceid.didkitexample.entity.user.UserCredential;
 import com.spruceid.didkitexample.util.DIDKitOptions;
+import com.spruceid.didkitexample.util.Resources;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -40,7 +41,7 @@ public class UserService implements UserDetailsService {
     }
 
     public String issueCredential(String id, User user) throws DIDKitException, IOException {
-        final Resource keyFile = new FileSystemResource("./key.jwk");
+        final Resource keyFile = new FileSystemResource(Resources.key);
 
         final String key = Files.readString(keyFile.getFile().toPath());
         final String didKey = DIDKit.keyToDID("key", key);
@@ -55,6 +56,5 @@ public class UserService implements UserDetailsService {
 
         return DIDKit.issueCredential(credentialJson, optionsJson, key);
     }
-
 }
 

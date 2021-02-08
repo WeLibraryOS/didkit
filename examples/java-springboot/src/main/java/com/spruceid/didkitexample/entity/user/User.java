@@ -1,4 +1,4 @@
-package com.spruceid.didkitexample.entity;
+package com.spruceid.didkitexample.entity.user;
 
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;

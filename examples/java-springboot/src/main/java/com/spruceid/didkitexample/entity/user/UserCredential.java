@@ -1,4 +1,4 @@
-package com.spruceid.didkitexample.entity;
+package com.spruceid.didkitexample.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -26,6 +28,8 @@ public class UserCredential {
 
     private String issuanceDate;
 
+    private String expirationDate;
+
     @Getter
     @Setter
     @AllArgsConstructor
@@ -37,19 +41,23 @@ public class UserCredential {
 
     private CredentialSubject credentialSubject;
 
-    private static final TimeZone tz = TimeZone.getTimeZone("UTC");
-    private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_INSTANT.withZone(ZoneId.from(ZoneOffset.UTC));
 
     public UserCredential(String issuer, String subjectId, String subjectUsername) {
-        context = new String[] {
-          "https://www.w3.org/2018/credentials/v1",
-          "https://www.w3.org/2018/credentials/examples/v1"
+        this.context = new String[]{
+                "https://www.w3.org/2018/credentials/v1",
+                "https://www.w3.org/2018/credentials/examples/v1"
         };
-        id = "urn:uuid:" + UUID.randomUUID();
-        type = new String[]{"VerifiableCredential"};
+
+        this.id = "urn:uuid:" + UUID.randomUUID();
+        this.type = new String[]{"VerifiableCredential"};
         this.issuer = issuer;
-        df.setTimeZone(tz);
-        this.issuanceDate = df.format(new Date());
+
+        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime exp = now.plus(Period.ofMonths(6));
+        this.issuanceDate = dateFormat.format(now.toInstant(ZoneOffset.UTC));
+        this.expirationDate = dateFormat.format(exp.toInstant(ZoneOffset.UTC));
+
         this.credentialSubject = new CredentialSubject(subjectId, subjectUsername);
     }
 }

@@ -1,6 +1,6 @@
 package com.spruceid.didkitexample.user;
 
-import com.spruceid.didkitexample.entity.User;
+import com.spruceid.didkitexample.entity.user.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
